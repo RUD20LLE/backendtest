@@ -2,6 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { LoginModule } from './login/login.module';
 import { ToggleModule } from './toggle/toggle.module';
+import { BandaTransportadoraModule } from './banda-transportadora/banda-transportadora.module';
+import { EnjabonadoModule } from './enjabonado/enjabonado.module';
+import { CepilladoModule } from './cepillado/cepillado.module';
+import { SecadoModule } from './secado/secado.module';
+import { MqttModule } from './mqtt/mqtt.module';
 
 @Module({
   imports: [
@@ -10,6 +15,11 @@ import { ToggleModule } from './toggle/toggle.module';
     }),
     LoginModule,
     ToggleModule,
+    BandaTransportadoraModule,
+    EnjabonadoModule,
+    CepilladoModule,
+    SecadoModule,
+    MqttModule,
   ],
 })
 export class AppModule {}
