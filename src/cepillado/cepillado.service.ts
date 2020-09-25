@@ -1,19 +1,49 @@
-import { Injectable } from '@nestjs/common';
-import { Client, ClientProxy, Transport } from '@nestjs/microservices';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
+import { MqttService } from '../mqtt/mqtt.service';
 
 @Injectable()
 export class CepilladoService {
-  @Client({
-    transport: Transport.MQTT,
-    options: { url: 'mqtt://localhost:1883' },
-  })
-  private client: ClientProxy;
+  private readonly logger = new Logger(CepilladoService.name);
+  private estadoActual: string;
 
-  controlarCepillado(estado: string): Promise<string> {
-    return this.client.send('ESP32/cepillado/control', estado).toPromise();
+  constructor(private readonly mqttService: MqttService) {
+    this.mqttService.subscribe('ESP32/cepillado/estado');
+    this.mqttService.onMessage('ESP32/cepillado/estado', (message) => {
+      this.estadoActual = message;
+    });
   }
 
-  obtenerEstado(): Promise<string> {
-    return this.client.send('ESP32/cepillado/estado', {}).toPromise();
+  async controlarCepillado(estado: string): Promise<string> {
+    try {
+      const result = await this.mqttService.publish(
+        'ESP32/cepillado/control',
+        estado,
+      );
+      this.logger.log(
+        `Resultado de controlarCepillado: ${JSON.stringify(result)}`,
+      );
+      return result;
+    } catch (error) {
+      this.logger.error('Error en controlarCepillado', error);
+      throw new InternalServerErrorException(
+        error.message || 'Error desconocido en controlarCepillado',
+      );
+    }
+  }
+
+  async obtenerEstado(): Promise<string> {
+    if (this.estadoActual) {
+      return this.estadoActual;
+    } else {
+      throw new InternalServerErrorException('Estado no disponible');
+    }
+  }
+
+  getEstado(): string {
+    return this.estadoActual;
   }
 }

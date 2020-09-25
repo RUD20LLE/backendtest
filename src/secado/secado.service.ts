@@ -1,23 +1,49 @@
-import { Injectable } from '@nestjs/common';
-import { Client, ClientProxy, Transport } from '@nestjs/microservices';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
+import { MqttService } from '../mqtt/mqtt.service';
 
 @Injectable()
 export class SecadoService {
-  @Client({
-    transport: Transport.MQTT,
-    options: {
-      url: 'mqtt://d5034c5d.ala.us-east-1.emqxsl.com',
-      username: 'esp32user',
-      password: 'qwerty123',
-    },
-  })
-  private client: ClientProxy;
+  private readonly logger = new Logger(SecadoService.name);
+  private estadoActual: string;
 
-  controlarSecado(estado: string): Promise<string> {
-    return this.client.send('ESP32/secado/control', estado).toPromise();
+  constructor(private readonly mqttService: MqttService) {
+    this.mqttService.subscribe('ESP32/secado/estado');
+    this.mqttService.onMessage('ESP32/secado/estado', (message) => {
+      this.estadoActual = message;
+    });
   }
 
-  obtenerEstado(): Promise<string> {
-    return this.client.send('ESP32/secado/estado', {}).toPromise();
+  async controlarSecado(estado: string): Promise<string> {
+    try {
+      const result = await this.mqttService.publish(
+        'ESP32/secado/control',
+        estado,
+      );
+      this.logger.log(
+        `Resultado de controlarSecado: ${JSON.stringify(result)}`,
+      );
+      return result;
+    } catch (error) {
+      this.logger.error('Error en controlarSecado', error);
+      throw new InternalServerErrorException(
+        error.message || 'Error desconocido en controlarSecado',
+      );
+    }
+  }
+
+  async obtenerEstado(): Promise<string> {
+    if (this.estadoActual) {
+      return this.estadoActual;
+    } else {
+      throw new InternalServerErrorException('Estado no disponible');
+    }
+  }
+
+  getEstado(): string {
+    return this.estadoActual;
   }
 }

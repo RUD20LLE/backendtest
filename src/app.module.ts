@@ -7,6 +7,7 @@ import { EnjabonadoModule } from './enjabonado/enjabonado.module';
 import { CepilladoModule } from './cepillado/cepillado.module';
 import { SecadoModule } from './secado/secado.module';
 import { MqttModule } from './mqtt/mqtt.module';
+import { InicioModule } from './controlesplc/inicio/inicio.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MqttModule } from './mqtt/mqtt.module';
     CepilladoModule,
     SecadoModule,
     MqttModule,
+    InicioModule,
   ],
 })
 export class AppModule {}

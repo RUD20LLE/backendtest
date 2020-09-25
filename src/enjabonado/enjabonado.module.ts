@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
-import { EnjabonadoController } from './enjabonado.controller';
 import { EnjabonadoService } from './enjabonado.service';
+import { EnjabonadoController } from './enjabonado.controller';
+import { MqttModule } from '../mqtt/mqtt.module';
 
 @Module({
+  imports: [MqttModule],
   controllers: [EnjabonadoController],
   providers: [EnjabonadoService],
 })
