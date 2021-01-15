@@ -3,7 +3,7 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { MqttService } from '../mqtt/mqtt.service';
+import { MqttService } from '../../mqtt/mqtt.service';
 
 @Injectable()
 export class BandaTransportadoraService {

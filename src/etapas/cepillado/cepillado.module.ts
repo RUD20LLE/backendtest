@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CepilladoService } from './cepillado.service';
 import { CepilladoController } from './cepillado.controller';
-import { MqttModule } from '../mqtt/mqtt.module';
+import { MqttModule } from '../../mqtt/mqtt.module';
 
 @Module({
   imports: [MqttModule],

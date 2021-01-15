@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as mqtt from 'mqtt';
-import * as fs from 'fs';
 
 @Injectable()
 export class MqttService {
   private client: mqtt.MqttClient;
   messageCallbacks: { [key: string]: (message: string) => void } = {};
 
-  constructor() {
-    this.client = mqtt.connect(
-      'mqtts://d5034c5d.ala.us-east-1.emqxsl.com:8883',
-      {
-        username: 'esp32user',
-        password: 'qwerty123',
-        ca: fs.readFileSync(
-          'C:/Users/WORK-PC/Desktop/pruebaenv/backend/EMQXCA/emqxslMQTT.crt',
-        ),
-      },
-    );
+  constructor(private configService: ConfigService) {
+    const brokerUrl = this.configService.get<string>('MQTT_BROKER_URL');
+    const username = this.configService.get<string>('MQTT_USERNAME');
+    const password = this.configService.get<string>('MQTT_PASSWORD');
+    const caCert = this.configService.get<string>('MQTT_CA_CERT');
+
+    this.client = mqtt.connect(brokerUrl, {
+      username,
+      password,
+      ca: caCert,
+    });
 
     this.client.on('connect', () => {
       console.log('Connected to MQTT broker');

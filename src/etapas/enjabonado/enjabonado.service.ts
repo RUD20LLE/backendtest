@@ -3,34 +3,34 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { MqttService } from '../mqtt/mqtt.service';
+import { MqttService } from '../../mqtt/mqtt.service';
 
 @Injectable()
-export class CepilladoService {
-  private readonly logger = new Logger(CepilladoService.name);
+export class EnjabonadoService {
+  private readonly logger = new Logger(EnjabonadoService.name);
   private estadoActual: string;
 
   constructor(private readonly mqttService: MqttService) {
-    this.mqttService.subscribe('ESP32/cepillado/estado');
-    this.mqttService.onMessage('ESP32/cepillado/estado', (message) => {
+    this.mqttService.subscribe('ESP32/enjabonado/estado');
+    this.mqttService.onMessage('ESP32/enjabonado/estado', (message) => {
       this.estadoActual = message;
     });
   }
 
-  async controlarCepillado(estado: string): Promise<string> {
+  async controlarEnjabonado(estado: string): Promise<string> {
     try {
       const result = await this.mqttService.publish(
-        'ESP32/cepillado/control',
+        'ESP32/enjabonado/control',
         estado,
       );
       this.logger.log(
-        `Resultado de controlarCepillado: ${JSON.stringify(result)}`,
+        `Resultado de controlarEnjabonado: ${JSON.stringify(result)}`,
       );
       return result;
     } catch (error) {
-      this.logger.error('Error en controlarCepillado', error);
+      this.logger.error('Error en controlarEnjabonado', error);
       throw new InternalServerErrorException(
-        error.message || 'Error desconocido en controlarCepillado',
+        error.message || 'Error desconocido en controlarEnjabonado',
       );
     }
   }
