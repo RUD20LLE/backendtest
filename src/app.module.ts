@@ -8,6 +8,9 @@ import { CepilladoModule } from './cepillado/cepillado.module';
 import { SecadoModule } from './secado/secado.module';
 import { MqttModule } from './mqtt/mqtt.module';
 import { InicioModule } from './controlesplc/inicio/inicio.module';
+import { ContinuarModule } from './controlesplc/continuar/continuar.module';
+import { PausaModule } from './controlesplc/pausa/pausa.module';
+import { ParoModule } from './controlesplc/paro/paro.module';
 
 @Module({
   imports: [
@@ -22,6 +25,9 @@ import { InicioModule } from './controlesplc/inicio/inicio.module';
     SecadoModule,
     MqttModule,
     InicioModule,
+    ParoModule,
+    PausaModule,
+    ContinuarModule,
   ],
 })
 export class AppModule {}
