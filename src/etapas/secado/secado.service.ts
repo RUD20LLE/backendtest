@@ -3,34 +3,34 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { MqttService } from '../mqtt/mqtt.service';
+import { MqttService } from '../../mqtt/mqtt.service';
 
 @Injectable()
-export class EnjabonadoService {
-  private readonly logger = new Logger(EnjabonadoService.name);
+export class SecadoService {
+  private readonly logger = new Logger(SecadoService.name);
   private estadoActual: string;
 
   constructor(private readonly mqttService: MqttService) {
-    this.mqttService.subscribe('ESP32/enjabonado/estado');
-    this.mqttService.onMessage('ESP32/enjabonado/estado', (message) => {
+    this.mqttService.subscribe('ESP32/secado/estado');
+    this.mqttService.onMessage('ESP32/secado/estado', (message) => {
       this.estadoActual = message;
     });
   }
 
-  async controlarEnjabonado(estado: string): Promise<string> {
+  async controlarSecado(estado: string): Promise<string> {
     try {
       const result = await this.mqttService.publish(
-        'ESP32/enjabonado/control',
+        'ESP32/secado/control',
         estado,
       );
       this.logger.log(
-        `Resultado de controlarEnjabonado: ${JSON.stringify(result)}`,
+        `Resultado de controlarSecado: ${JSON.stringify(result)}`,
       );
       return result;
     } catch (error) {
-      this.logger.error('Error en controlarEnjabonado', error);
+      this.logger.error('Error en controlarSecado', error);
       throw new InternalServerErrorException(
-        error.message || 'Error desconocido en controlarEnjabonado',
+        error.message || 'Error desconocido en controlarSecado',
       );
     }
   }
